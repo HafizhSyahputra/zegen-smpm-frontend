@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	font-family: Overpass, Inter, system-ui, sans-serif;
+}
+
+input{
+	font-family: Overpass, Inter, system-ui, sans-serif;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-Thin"),
+		url("/fonts/overpass/Overpass-Thin.ttf") format("truetype");
+	font-weight: 100;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-ExtraLight"),
+		url("/fonts/overpass/Overpass-ExtraLight.ttf") format("truetype");
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-Light"),
+		url("/fonts/overpass/Overpass-Light.ttf") format("truetype");
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-Regular"),
+		url("/fonts/overpass/Overpass-Regular.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-Medium"),
+		url("/fonts/overpass/Overpass-Medium.ttf") format("truetype");
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-SemiBold"),
+		url("/fonts/overpass/Overpass-SemiBold.ttf") format("truetype");
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-Bold"),
+		url("/fonts/overpass/Overpass-Bold.ttf") format("truetype");
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-ExtraBold"),
+		url("/fonts/overpass/Overpass-ExtraBold.ttf") format("truetype");
+	font-weight: 800;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Overpass";
+	src: local("Overpass-Black"),
+		url("/fonts/overpass/Overpass-Black.ttf") format("truetype");
+	font-weight: 900;
+	font-style: normal;
+}

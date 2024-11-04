@@ -1,0 +1,5 @@
+th.ant-table-cell {
+	@apply bg-slate-100 !important;
+	width: fit-content;
+	white-space: pre;
+}
