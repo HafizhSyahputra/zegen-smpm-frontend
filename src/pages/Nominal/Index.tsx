@@ -1,13 +1,11 @@
-
-import { HomeOutlined } from "@ant-design/icons"
+import { HomeOutlined, PlusOutlined } from "@ant-design/icons"
 import PageContent from "@smpm/components/PageContent"
 import PageLabel from "@smpm/components/pageLabel"
 import Page from "@smpm/components/pageTitle"
 import { IconCurrencyDollar } from "@tabler/icons-react"
 import { Breadcrumb, Button, Card, Flex, Typography, } from "antd"
 import { useState } from "react"
-import { PlusOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 import TableNominal from "./components/TableNominal"
 
 const { Title } = Typography;
@@ -16,6 +14,7 @@ const Nominal = () => {
     const onAddNewNominal = () => navigate("/payment/nominal/add");
 	const [] = useState(false)
 	const [filter] = useState({})
+
 	return (
 		<Page title="Nominal">
 			<PageLabel

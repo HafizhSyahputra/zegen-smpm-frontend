@@ -26,7 +26,6 @@ const TableOpenJobOrder: React.FC<ITableOpenJobOrderProps> = ({ filter }) => {
 	const {
 		data: openJobOrder,
 		isLoading,
-		isSuccess,
 	} = useQuery({
 		queryKey: ["open-job-order", { ...tableFilter, searchValue, ...filter }],
 		queryFn: () =>

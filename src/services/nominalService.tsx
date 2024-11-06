@@ -1,10 +1,10 @@
 import { IBaseResponseService, IPaginationRequest, IPaginationResponse } from "@smpm/models";
 import axios from "./axios";
-import { IFormInputNominal, IUpdateInputNominal, ICreateNominalDTO } from "@smpm/models/nominalModel";
+import { IFormInputNominal, IUpdateInputNominal, INominalModel, ICreateNominalDTO } from "@smpm/models/nominalModel";
 
 
 export const uploadNominal = async (data: { nominal: string; jenis: string; tipe: string }) => {
-    const response = await axios.post("/nominal", data, {
+    const response = await axios.patch("/nominal/:id", data, {
         headers: { "Content-Type": "application/json" },
     });
     return response.data;
@@ -25,6 +25,23 @@ export const update = async (
     return response.data;
 };
 
+ export const updateNominal = async (id: number, values: Partial<INominalModel>) => {  
+    try {  
+        const response = await axios.patch(`/nominal/${id}`, values);  
+        return response.data;  
+    } catch (error: any) {  
+         if (error.response) {  
+            throw error;  
+        }  
+        throw new Error('Terjadi kesalahan saat mengupdate data');  
+    }  
+};
+
+ export const deleteNominal = async (id: number) => {  
+    const response = await axios.delete(`/nominal/${id}`);  
+    return response.data;  
+};
+
 export const createNominal = async (data: ICreateNominalDTO) => {  
     try {  
       console.log('Data yang akan dikirim ke server:', {  
@@ -40,10 +57,13 @@ export const createNominal = async (data: ICreateNominalDTO) => {
         console.error('Detail Error dari Server:', {  
             status: error.response?.status,  
             statusText: error.response?.statusText,  
-            responseData: error.response?.data, // Pastikan ini ada  
+            responseData: error.response?.data,
             fullError: error  
         });  
-        throw error;  
+        if (error.response) {  
+            throw error;  
+        }  
+        throw new Error('Terjadi kesalahan saat create data');   
     }
   };
   

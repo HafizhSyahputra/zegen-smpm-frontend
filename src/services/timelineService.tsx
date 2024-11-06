@@ -12,3 +12,23 @@ export const getTimelineData = async (
   });  
   return response.data;     
 };
+
+export const downloadMedia = async (filename: string): Promise<Blob> => {  
+  try {  
+    const response = await axios.get(`/job-order/media/download/${encodeURIComponent(filename)}`, {  
+      responseType: 'blob',  
+      headers: {  
+        'Accept': 'application/octet-stream'  
+      }  
+    });  
+    
+    if (response.status !== 200) {  
+      throw new Error('Download failed');  
+    }  
+    
+    return response.data;  
+  } catch (error) {  
+    console.error('Download error:', error);  
+    throw error;  
+  }  
+};
