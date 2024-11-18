@@ -13,6 +13,7 @@ import {
   // IconHistory,  
   IconFileSearch,
   IconFileHorizontal,
+  IconNews
 } from "@tabler/icons-react";  
 import { Layout, Menu, MenuProps } from "antd";  
 import React, { useMemo, useState, useEffect } from "react";  
@@ -85,7 +86,7 @@ const items: MenuItem[] = [
     ]  
   ),   
   getItem(  
-    "Audit Trial",  
+    "Audit Trail",  
     "audit",  
     <IconFileSearch size="1.2rem" />,  
     [  
@@ -93,6 +94,7 @@ const items: MenuItem[] = [
       getItem("System Logs", "audit/syslogs"),  
     ]  
   ),
+  getItem("Berita dan Acara", "berita", <IconNews size="1.2rem" />),
 
 ];  
 

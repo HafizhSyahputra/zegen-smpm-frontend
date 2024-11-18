@@ -49,9 +49,13 @@ const InputEDC: React.FC<InputEDCProps> = ({ hide }) => {
   }  
 
   const isDoneStatus = jobOrder.result.status === "Done";  
-  const jobOrderReport = jobOrder.result.JobOrderReport[0] || {};  
-  const preventiveMaintenanceReport = jobOrder.result.PreventiveMaintenanceReport[0] || {};  
-  const reportToUse = Object.keys(jobOrderReport).length > 0 ? jobOrderReport : preventiveMaintenanceReport;  
+
+  // Filter to find the "Done" job order report  
+  const doneJobOrderReport = jobOrder.result.JobOrderReport.find((report: { status: string; }) => report.status === "Done") || {};  
+  const donePreventiveMaintenanceReport = jobOrder.result.PreventiveMaintenanceReport.find((report: { status: string; }) => report.status === "Done") || {};  
+
+  // Choose the appropriate report to use, prioritizing the JobOrderReport  
+  const reportToUse = Object.keys(doneJobOrderReport).length > 0 ? doneJobOrderReport : donePreventiveMaintenanceReport;  
   const products = reportToUse.JobOrderReportProduct || [];  
 
   return (  

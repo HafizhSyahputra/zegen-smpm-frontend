@@ -2,7 +2,6 @@
 export interface DocMerchantModel {
   merchant: any;  
   id: number; 
-  merchant_id: number;
   merchant_name: string;  
   longitude: string;
   latitude: string;
@@ -18,14 +17,11 @@ export interface IUpdateDocMerchantDto {
 }  
 
 export interface DocVendorModel {  
-  id: number;
-  no_jo: string;  
+  id: number; 
   name: string;  
-  jo_type: string;  
   vendor_name: string; 
-  edc_brand: string;  
-  edc_type: string;  
-  tanggal_masuk: string;  
+  tanggal_perjanjian: string; 
+  no_perjanjian_kerjasama: string;  
   file1: string;  
   file2: string;  
 }  

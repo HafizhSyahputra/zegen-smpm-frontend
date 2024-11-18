@@ -1,5 +1,4 @@
 import { HomeOutlined } from "@ant-design/icons"  
-import FormFieldDescriptionAndEvidence from "@smpm/components/FormFields/FormFieldDescriptionAndEvidence"  
 import PageContent from "@smpm/components/PageContent"  
 import SectionHeader from "@smpm/components/SectionHeader"  
 import PageLabel from "@smpm/components/pageLabel"  
@@ -40,9 +39,9 @@ import InputEDC from "./components/InputEDC"
 import JobChecklist from "./components/JobChecklist"  
 import StepActivity from "./components/StepActivity"  
 import UploadEvidenceAndNote from "./components/UploadEvidenceAndNote"  
+import FormFieldCancelDescriptionAndEvidence from "@smpm/components/FormFields/FormFieldCancelDescriptionAndEvidence"
 
 const { Text, Title } = Typography  
-const { TextArea } = Input  
 
 const STEP_ITEMS: StepProps[] = [  
     {  
@@ -254,7 +253,7 @@ const JobOrderActivity = () => {
         });  
     };  
 
-    const onFinishCancellation = (data) => {  
+    const onFinishCancellation = (data: any) => {  
         onFinishHandle({  
             status: "Cancel",  
             ...formContinue.getFieldsValue(),  
@@ -310,7 +309,7 @@ const JobOrderActivity = () => {
         <Page title={"Job Order Activity - " + no_jo}>  
             <Modal  
                 open={isModalOpen}  
-                title={`Are you sure wants to Cancel this Job Order`}  
+                title={`Are you sure you want to cancel this Job Order?`}  
                 onOk={onOk}  
                 afterClose={() => formCancellation.resetFields()}  
                 onCancel={onCancel}  
@@ -321,9 +320,9 @@ const JobOrderActivity = () => {
                     onFinish={onFinishCancellation}  
                     layout={"vertical"}  
                 >  
-                    <FormFieldDescriptionAndEvidence />  
+                    <FormFieldCancelDescriptionAndEvidence />  
                 </Form>  
-            </Modal>  
+            </Modal>
             <PageLabel  
                 title={  
                     <span className="font-semibold text-2xl">  

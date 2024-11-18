@@ -14,6 +14,7 @@ const UploadEvidenceAndNote: React.FC<UploadEvidenceAndNoteProps> = ({ hide }) =
   const { no_jo } = useParams<{ no_jo?: string }>();  
   const [jobOrder, setJobOrder] = useState<any>(null);  
   const [isDoneStatus, setIsDoneStatus] = useState(false);  
+  const [isCancelledStatus, setIsCancelledStatus] = useState(false);  
   const [isLoading, setIsLoading] = useState(true);  
 
   useEffect(() => {  
@@ -23,6 +24,7 @@ const UploadEvidenceAndNote: React.FC<UploadEvidenceAndNoteProps> = ({ hide }) =
           const jobOrder = await findJobOrder(no_jo);  
           setJobOrder(jobOrder);  
           setIsDoneStatus(jobOrder.result.status === "Done");  
+          setIsCancelledStatus(jobOrder.result.status === "Cancel");  
           setIsLoading(false);  
         } else {  
           console.error("No job order number found in the URL");  
@@ -51,48 +53,38 @@ const UploadEvidenceAndNote: React.FC<UploadEvidenceAndNoteProps> = ({ hide }) =
     return null;  
   }  
 
-  const jobOrderReport = jobOrder.result.JobOrderReport[0];  
-  const pmReport = jobOrder.result.PreventiveMaintenanceReport[0];  
+  const doneJobOrderReport = jobOrder.result.JobOrderReport.find(  
+    (report: any) => report.status === "Done"  
+  );  
+  const donePmReport = jobOrder.result.PreventiveMaintenanceReport.find(  
+    (report: any) => report.status === "Done"  
+  );  
 
-  const reportToUse = jobOrderReport && jobOrderReport.id ? jobOrderReport : pmReport;  
+  const reportToUse = doneJobOrderReport || donePmReport;  
 
-  const description = reportToUse ? reportToUse.information : "";  
-
+  const description = isCancelledStatus ? "" : reportToUse ? reportToUse.information : "";  
   const proofOfVisitImages = reportToUse?.MediaJobOrderReportProofOfVisit  
-    .filter((media: any) => {  
-      return media.media_id;  
-    })  
-    .map((media: any) => {  
-      const mediaId = media.media_id;  
-      const path = `http://localhost:46/media/${mediaId}`;  
-      return {  
-        media_id: mediaId,  
-        media: { path },  
-      };  
-    }) || [];  
-
+    .filter((media: any) => media.media_id)  
+    .map((media: any) => ({  
+      media_id: media.media_id,  
+      media: { path: `http://localhost:46/media/${media.media_id}` },  
+    })) || [];  
   const optionalImages = reportToUse?.MediaJobOrderReportOptionalPhoto  
-    .filter((media: any) => {  
-      console.log("Filtering Optional Media:", media);  
-      return media.media_id;  
-    })  
-    .map((media: any) => {  
-      const mediaId = media.media_id;  
-      const path = `http://localhost:46/media/${mediaId}`;  
-      return {  
-        media_id: mediaId,  
-        media: { path },  
-      };  
-    }) || [];  
+    .filter((media: any) => media.media_id)  
+    .map((media: any) => ({  
+      media_id: media.media_id,  
+      media: { path: `http://localhost:46/media/${media.media_id}` },  
+    })) || [];  
 
   return (  
     <div style={{ display: hide ? "none" : "block" }}>  
       <Title level={5}>Upload Evidence and Note</Title>  
       <FormFieldDescriptionAndEvidence  
         description={description}  
-        proofOfVisitImages={proofOfVisitImages}  
-        optionalImages={optionalImages}  
+        proofOfVisitImages={isCancelledStatus ? [] : proofOfVisitImages}  
+        optionalImages={isCancelledStatus ? [] : optionalImages}  
         isDone={isDoneStatus}  
+        isCancelled={isCancelledStatus}  
       />  
     </div>  
   );  

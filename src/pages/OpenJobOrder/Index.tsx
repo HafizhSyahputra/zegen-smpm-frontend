@@ -24,7 +24,6 @@ import FilterTableOpenJobOrder from "./components/FilterTableOpenJobOrder"
 import FormImportJobOrderAcknowledge from "./components/FormImportJobOrderAcknowledge"
 import FormImportJobOrderNew from "./components/FormImportJobOrderNew"
 import TableOpenJobOrder from "./components/TableOpenJobOrder"
-import FormImportNominal from "./components/FormImportNominal"
 const OpenJobOrder = () => {
 	const [errorTableJoNew, setErrorTableJoNew] = useState<IErrorTable[]>([])
 	const [errorTableJoAcknowledge, setErrorTableJoAcknowledge] = useState<
@@ -32,7 +31,6 @@ const OpenJobOrder = () => {
 	>([])
 	const dispatch = useDispatch()
 	const queryClient = useQueryClient()
-	const [openDrawerNominal, setOpenDrawerNominal] = useState(false)
 	const [openDrawerImportNew, setOpenDrawerImportNew] = useState(false)
 	const [openDrawerImportAcknowledge, setOpenDrawerImportAcknowledge] =
 		useState(false)
@@ -41,10 +39,6 @@ const OpenJobOrder = () => {
 	const showDrawerImportAcknowledge = () => {
 		setOpenDrawerImportAcknowledge(true)
 	}
-	const showDrawerNominal = () => {
-		setOpenDrawerNominal(true)
-	}
-
 	const showDrawerImportNew = () => {
 		setOpenDrawerImportNew(true)
 	}
@@ -52,7 +46,6 @@ const OpenJobOrder = () => {
 	const onClose = () => {
 		setOpenDrawerImportNew(false)
 		setOpenDrawerImportAcknowledge(false)
-		setOpenDrawerNominal(false)
 	}
 
 	const onResetJoNew = () => {
@@ -70,30 +63,28 @@ const OpenJobOrder = () => {
 	>({
 		mutationFn: uploadJobOrderNew,
 	})
-	const onFinishImportJobOrderNew = (values: IFormInputImportJobOrder) => {
-		const formData = new FormData()
-		formData.append("files", values.files)
-		uploadJobOrderNewMutation.mutate(formData, {
-			onSuccess: () => {
-				message.success("Data berhasil diupload")
-				queryClient.invalidateQueries({
-					queryKey: ["open-job-order"],
-				})
-				onClose()
-				onResetJoNew()
-			},
-			onError: (err) => {
-				makeResponseServiceError(dispatch, "import-job-order-new", err)
-
-				if (
-					err.response?.data.status.code == 400 &&
-					err.response.data.result.errors
-				) {
-					setErrorTableJoNew(err.response.data.result.errors as any)
-				}
-			},
-		})
-	}
+	const onFinishImportJobOrderNew = (formData: FormData) => {  
+		uploadJobOrderNewMutation.mutate(formData, {  
+			onSuccess: () => {  
+				message.success("Data berhasil diupload");  
+				queryClient.invalidateQueries({  
+					queryKey: ["open-job-order"],  
+				});  
+				onClose();  
+				onResetJoNew();  
+			},  
+			onError: (err) => {  
+				makeResponseServiceError(dispatch, "import-job-order-new", err);  
+	
+				if (  
+					err.response?.data.status.code == 400 &&  
+					err.response.data.result.errors  
+				) {  
+					setErrorTableJoNew(err.response.data.result.errors as any);  
+				}  
+			},  
+		});  
+	};
 
 	const uploadJobOrderAcknowledgeMutation = useMutation<
 		IBaseResponseService<any>,
@@ -162,12 +153,6 @@ const OpenJobOrder = () => {
 				}
 				endSection={
 					<Space>
-						<Button
-							icon={<IconUserCog size="1rem" />}
-							onClick={showDrawerNominal}
-						>
-							Import Nominal Job Order
-						</Button>
 						<Button
 							icon={<IconUserCog size="1rem" />}
 							onClick={showDrawerImportAcknowledge}
@@ -240,20 +225,6 @@ const OpenJobOrder = () => {
 						errors={errorTableJoAcknowledge}
 					/>
 				)}
-			</Drawer>
-
-			<Drawer
-				title="Import Nominal Job Order"
-				width={720}
-				onClose={onClose}
-				open={openDrawerNominal}
-				styles={{
-					body: {
-						paddingBottom: 80,
-					},
-				}}
-			>
-				<FormImportNominal/>
 			</Drawer>
 		</Page>
 	)

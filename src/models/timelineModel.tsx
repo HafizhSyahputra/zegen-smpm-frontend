@@ -4,6 +4,7 @@ export interface StagingJobOrder {
   staging_id: number;  
   petugas: string | null;  
   reason: string | null;  
+  cancel_type: string | null;
   photo_evidence: string | null;  
   photo_optional: string | null;  
   created_at: string;  
@@ -77,7 +78,8 @@ export interface JobOrderReport {
 
 export interface PreventiveMaintenanceReport {  
   id: number; // Primary key  
-  // Other properties as required based on your PreventiveMaintenanceReport model  
+  MediaJobOrderReportProofOfVisit: MediaJobOrderReportProofOfVisit[]; // Ubah menjadi array  
+  MediaJobOrderReportOptionalPhoto: MediaJobOrderReportOptionalPhoto[]; 
 }
 export interface Media {  
   id: number;  

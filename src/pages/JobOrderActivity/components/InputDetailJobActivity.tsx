@@ -43,12 +43,13 @@ const InputDetailJobActivity: React.FC<InputDetailJobActivityProps> = ({
 
   const { result } = jobOrder;  
 
-  const jobOrderReport =  
-    result.JobOrderReport.length > 0  
-      ? result.JobOrderReport[0]  
-      : result.PreventiveMaintenanceReport[0] || {};  
+  const doneReports = result.JobOrderReport.filter((report: { status: string; }) => report.status === "Done");  
 
-  const isDoneStatus = result.status === "Done";  
+   const jobOrderReport = doneReports.length > 0   
+    ? doneReports[0]   
+    : result.PreventiveMaintenanceReport.find((report: { status: string; }) => report.status === "Done") || {};  
+
+  const isDoneStatus = jobOrderReport.status === "Done";  
 
   const arrival_time = isDoneStatus ? dayjs(jobOrderReport.arrival_time) : undefined;  
   const start_time = isDoneStatus ? dayjs(jobOrderReport.start_time) : undefined;  

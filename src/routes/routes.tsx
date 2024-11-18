@@ -136,6 +136,10 @@ export const routes: RouteObject[] = [
 				Component: lazy(() => import("@smpm/pages/Nominal/Index")),
 			},
 			{
+				path: "berita",
+				Component: lazy(() => import("@smpm/pages/BeritaDanAcara/BeritaDanAcaraPage")),
+			},
+			{
 				path: "job-order",
 				children: [
 					{

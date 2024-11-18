@@ -54,10 +54,7 @@ const TRAINING_MATERIAL_CHECKLIST = [
   { label: "Fare & Non Fare", value: "fare_non_fare" },  
   { label: "DCC/Download BIN", value: "dcc_download_bin" },  
   { label: "First Level Maintenance", value: "first_level_maintenance" },  
-  {  
-    label: "Penyimpanan Struk Transaksi",  
-    value: "transaction_receipt_storage",  
-  },  
+  { label: "Penyimpanan Struk Transaksi", value: "transaction_receipt_storage" },  
 ];  
 
 type JobChecklistProps = {  
@@ -66,7 +63,7 @@ type JobChecklistProps = {
 
 const JobChecklist: React.FC<JobChecklistProps> = ({ hide }) => {  
   const { no_jo } = useParams<{ no_jo?: string }>();  
-  const [jobOrder, setJobOrder] = useState<any>(null);  
+  const [_jobOrder, setJobOrder] = useState<any>(null);  
   const [isDoneStatus, setIsDoneStatus] = useState(false);  
   const [edcDongleEquipment, setEdcDongleEquipment] = useState<string[]>([]);  
   const [materialPromo, setMaterialPromo] = useState<string[]>([]);  
@@ -77,19 +74,21 @@ const JobChecklist: React.FC<JobChecklistProps> = ({ hide }) => {
     const fetchJobOrder = async () => {  
       if (typeof no_jo === "string") {  
         try {  
-          const jobOrder = await findJobOrder(no_jo);  
-          setJobOrder(jobOrder);  
-          setIsDoneStatus(jobOrder.result.status === "Done");  
+          const jobOrderData = await findJobOrder(no_jo);  
+          setJobOrder(jobOrderData);  
+          setIsDoneStatus(jobOrderData.result.status === "Done");  
 
           let edcEquipment, promoMaterials, trainingMaterials;  
-          if (jobOrder.result.JobOrderReport && jobOrder.result.JobOrderReport.length > 0) {  
-            edcEquipment = jobOrder.result.JobOrderReport[0].JobOrderReportEdcEquipmentDongle[0];  
-            promoMaterials = jobOrder.result.JobOrderReport[0].JobOrderReportMaterialPromo[0];  
-            trainingMaterials = jobOrder.result.JobOrderReport[0].JobOrderReportMaterialTraining[0];  
-          } else if (jobOrder.result.PreventiveMaintenanceReport && jobOrder.result.PreventiveMaintenanceReport.length > 0) {  
-            edcEquipment = jobOrder.result.PreventiveMaintenanceReport[0].JobOrderReportEdcEquipmentDongle[0];  
-            promoMaterials = jobOrder.result.PreventiveMaintenanceReport[0].JobOrderReportMaterialPromo[0];  
-            trainingMaterials = jobOrder.result.PreventiveMaintenanceReport[0].JobOrderReportMaterialTraining[0];  
+          if (jobOrderData.result.JobOrderReport && jobOrderData.result.JobOrderReport.length > 0) {  
+            const doneReport = jobOrderData.result.JobOrderReport.find((report: { status: string; }) => report.status === "Done");  
+            edcEquipment = doneReport ? doneReport.JobOrderReportEdcEquipmentDongle[0] : {};  
+            promoMaterials = doneReport ? doneReport.JobOrderReportMaterialPromo[0] : {};  
+            trainingMaterials = doneReport ? doneReport.JobOrderReportMaterialTraining[0] : {};  
+          } else if (jobOrderData.result.PreventiveMaintenanceReport && jobOrderData.result.PreventiveMaintenanceReport.length > 0) {  
+            const doneReport = jobOrderData.result.PreventiveMaintenanceReport.find((report: { status: string; }) => report.status === "Done");  
+            edcEquipment = doneReport ? doneReport.JobOrderReportEdcEquipmentDongle[0] : {};  
+            promoMaterials = doneReport ? doneReport.JobOrderReportMaterialPromo[0] : {};  
+            trainingMaterials = doneReport ? doneReport.JobOrderReportMaterialTraining[0] : {};  
           } else {  
             console.error("No report data found in the job order");  
             return;  

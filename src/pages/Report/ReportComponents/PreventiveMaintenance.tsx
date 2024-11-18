@@ -14,7 +14,7 @@ import { getAllRegion } from "@smpm/services/regionService";
 import { IPaginationRequest } from "@smpm/models";  
 import { getPMReports } from "@smpm/services/pmReportService";  
 import { IPreventiveMaintenanceReportModel } from "@smpm/models/pmReportModel";  
-import ReportPDF from "./PMPDF";  
+import ReportPDF from "./ReportPDF";  
 import FilterTablePreventive, { TOptions } from "./FilterTablePreventive";
 
 const { Title } = Typography;  
@@ -249,6 +249,7 @@ function PreventiveMaintenance() {
           tid: record.job_order?.tid || '',  
           case_type: record.job_order?.case_type || '',  
           city: record.job_order?.city || '',  
+          preventive_type: record.job_order.preventive_type,
           vendor: {  
               name: record.job_order?.vendor?.name || '',    
           },  
@@ -288,6 +289,7 @@ function PreventiveMaintenance() {
         merchant_pic_phone: record.merchant_pic_phone || '',  
         swipe_cash_indication: record.swipe_cash_indication || '',  
         information: record.information || '',  
+        cancel_reason: record.cancel_reason || '',  
         reason: record.reason || '',  
         info_remark: record.info_remark || '',  
         dongle: {  

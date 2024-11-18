@@ -18,7 +18,6 @@ export const findOne = async (id: number): Promise<IBaseResponseService<DocMerch
   return response.data;  
 }  
 
-
 export const createDocumentMerchant = async (  
   // merchantId: number, 
   merchantName: string,  
@@ -70,17 +69,49 @@ export const update = async (
     },
   });
   return response.data;
-};
+}; 
 
 export const remove = async (id: number): Promise<IBaseResponseService<void>> => {  
-  const response = await axios.delete(`/document-merchant/${id}`);  
-  return response.data;  
-}  
+  // Validate the id parameter  
+  if (typeof id !== 'number' || isNaN(id) || id <= 0) {  
+    throw new Error('Invalid id parameter');  
+  }  
 
-export const deleteFile = async (id: number, fileKey: 'file1' | 'file2') => {
-  const response = await axios.delete(`/document-merchant/${id}/file/${fileKey}`);
-  return response.data;
-};
+  try {  
+    const response = await axios.delete(`/document-merchant/${id}`);  
+    return response.data;  
+  } catch (error : any) {  
+    // Check if the error is a 422 Validation error  
+    if (error.response?.data?.status?.code === 422) {  
+      // Extract the error message from the response  
+      const errorMessage = error.response?.data?.result?.errors?.id?.[0];  
+      throw new Error(errorMessage);  
+    } else {  
+      console.error('Error in remove:', error);  
+      throw error;  
+    }  
+  }  
+};   
+
+export const deleteFile = async (id: number, fileKey: 'file1' | 'file2') => {  
+  // Validate the id parameter  
+  if (typeof id !== 'number' || isNaN(id) || id <= 0) {  
+    throw new Error('Invalid id parameter');  
+  }  
+
+  try {  
+    const response = await axios.delete(`/document-merchant/${id}/file/${fileKey}`);  
+    return response.data;  
+  } catch (error : any) {  
+    if (error.response?.data?.status?.code === 422) {  
+      const errorMessage = error.response?.data?.result?.errors?.id?.[0];  
+      throw new Error(errorMessage);  
+    } else {  
+      console.error('Error in deleteFile:', error);  
+      throw error;  
+    }  
+  }  
+};  
 
 export const download = async (id: number, fileKey: 'file1' | 'file2'): Promise<{  
   data: Blob;  

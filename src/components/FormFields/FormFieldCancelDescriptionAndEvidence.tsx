@@ -1,9 +1,10 @@
-import React from "react";  
-import { Form, Input, Image, Button } from "antd";  
+import React, { useState } from "react";  
+import { Form, Input, Image, Button, Select } from "antd";  
 import { FileOutlined } from "@ant-design/icons";  
 import UploadDragger from "../UploadDragger";  
 
 const { TextArea } = Input;  
+const { Option } = Select;  
 
 const normFile = (e: any) => {  
   if (Array.isArray(e)) {  
@@ -12,22 +13,38 @@ const normFile = (e: any) => {
   return e?.fileList;  
 };  
 
-export type FormFieldDescriptionAndEvidenceProps = {  
-  description: string;  
+export type FormFieldCancelDescriptionAndEvidenceProps = {  
+  description: string; 
+  reasonCancel: string | undefined; 
   proofOfVisitImages: { media_id: string; media: { path: string } }[];  
   optionalImages: { media_id: string; media: { path: string } }[];  
   isDone: boolean;  
   isCancelled: boolean;  
 };  
 
-const FormFieldDescriptionAndEvidence: React.FC<FormFieldDescriptionAndEvidenceProps> = ({  
+const FormFieldCancelDescriptionAndEvidence: React.FC<FormFieldCancelDescriptionAndEvidenceProps> = ({  
   isDone,  
   proofOfVisitImages,  
   optionalImages,  
   description,  
+  reasonCancel,
 }) => {  
   const isImage = (filePath: string) => {  
     return /\.(jpg|jpeg|png|gif|bmp|svg)$/i.test(filePath);  
+  };  
+
+  const [cancelReason, setCancelReason] = useState<string | undefined>(undefined);  
+  const [cancelReasonOther, setCancelReasonOther] = useState<string>("");  
+
+  const handleCancelReasonChange = (value: string) => {  
+    setCancelReason(value);  
+    if (value === "Lainnya") {  
+      setCancelReasonOther("");  
+    }  
+  };  
+
+  const handleCancelReasonOtherChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {  
+    setCancelReasonOther(event.target.value);  
   };  
 
   return (  
@@ -44,7 +61,49 @@ const FormFieldDescriptionAndEvidence: React.FC<FormFieldDescriptionAndEvidenceP
         ]}  
       >  
         <TextArea rows={4} readOnly={isDone} />  
-      </Form.Item>  
+      </Form.Item>   
+        <Form.Item label="Alasan Pembatalan">  
+          <Form.Item  
+            name="cancel_reason"  
+            initialValue={reasonCancel}  
+            rules={[  
+              {  
+                required: true,  
+                message: "Alasan pembatalan harus dipilih",  
+              },  
+            ]}  
+          >  
+            <Select  
+              value={cancelReason}  
+              onChange={handleCancelReasonChange}  
+              placeholder="Pilih alasan pembatalan"  
+            >  
+              <Option value="EDC Hilang">EDC Hilang</Option>  
+              <Option value="Merchant Tutup">Merchant Tutup</Option>  
+              <Option value="Ganti Job Order">Ganti Job Order</Option>  
+              <Option value="Ganti Job Order">Lainnya</Option>  
+            </Select>  
+          </Form.Item>  
+
+          {cancelReason === "Lainnya" && (  
+            <Form.Item  
+              name="cancel_reason"  
+              rules={[  
+                {  
+                  required: true,  
+                  message: "Silakan isi alasan pembatalan lainnya",  
+                },  
+              ]}  
+            >  
+              <TextArea  
+                rows={2}  
+                placeholder="Isi alasan pembatalan lainnya"  
+                value={cancelReasonOther}  
+                onChange={handleCancelReasonOtherChange}  
+              />  
+            </Form.Item>  
+          )}  
+        </Form.Item>  
 
       {isDone ? (  
         <Form.Item label="Bukti Kunjungan">  
@@ -139,4 +198,4 @@ const FormFieldDescriptionAndEvidence: React.FC<FormFieldDescriptionAndEvidenceP
   );  
 };  
 
-export default FormFieldDescriptionAndEvidence;  
+export default FormFieldCancelDescriptionAndEvidence;

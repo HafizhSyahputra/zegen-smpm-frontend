@@ -3,7 +3,7 @@ import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { ReportPDFProps } from "@smpm/models/jobOrderModel";
 import { PDFDateIndo, setToEndOfDay } from "@smpm/utils/dateUtils";
 
-const PMPDF = ({ data }: ReportPDFProps) => {
+const ReportPDF = ({ data }: ReportPDFProps) => {
   const displayValue = (value: string | null | undefined | "" | " " | "undefined" | "null") =>
     value && value.trim() !== "" ? value : "-";
 
@@ -81,24 +81,40 @@ const PMPDF = ({ data }: ReportPDFProps) => {
             Informasi Penugasan  
           </Text>  
           {[  
-            { label: "Target Kedatangan:", value: ": " + displayValue(PDFDateIndo(data.job_order.target_date)), color: "red" },  
+            { label: "Target Kedatangan", value: ": " + displayValue(PDFDateIndo(data.job_order.target_date)), color: "red" },  
             {  
-              label: "Jatuh Tempo:",  
+              label: "Jatuh Tempo",  
               value: ": " + displayValue(PDFDateIndo(setToEndOfDay(data.job_order.target_date))),  
               color: "red"  
             },  
-            { label: "Bank:", value: ": " + displayValue(data.job_order.vendor.name), color: "blue" },  
-            { label: "No Case/SPK:", value: ": " + displayValue(data.job_order_no), color: "black" },  
-            { label: "Case Type:", value: ": " + displayValue(data.job_order.case_type), color: "black" },  
-            { label: "Tipe Pengajuan:", value: ": " + displayValue(data.job_order.type), color: "blue" },  
-            { label: "Service Point:", value: ": " + displayValue(data.job_order.city), color: "black" },  
-            { label: "Keterangan:", value: ": " + formatValue(displayValue(data.information)), color: "black" },  
+            { label: "Bank", value: ": " + displayValue(data.job_order.vendor.name), color: "blue" },  
+            { label: "No Case/SPK", value: ": " + displayValue(data.job_order_no), color: "black" },  
+            { label: "Case Type", value: ": " + displayValue(data.job_order.case_type), color: "black" },  
+            { label: "Tipe Pengajuan", value: ": " + displayValue(data.job_order.type), color: "blue" },  
+            { label: "Service Point", value: ": " + displayValue(data.job_order.city), color: "black" },  
+            { label: "Keterangan", value: ": " + formatValue(displayValue(data.information)), color: "black" },  
           ].map((item, index) => (  
             <View key={index} style={{ flexDirection: "row", marginBottom: 5 }}>  
               <Text style={{ fontWeight: "bold", width: "40%" }}>{item.label}</Text>  
               <Text style={{ width: "60%", color: item.color, maxWidth: "60%", flexWrap: "wrap" }}>{item.value}</Text>  
             </View>  
           ))}  
+          {data.job_order.type?.toLowerCase() === 'preventive maintenance' && (  
+          <View style={{ flexDirection: "row", marginBottom: 5 }}>  
+            <Text style={{ fontWeight: "bold", width: "40%" }}>Tipe PM</Text>  
+            <Text style={{ width: "60%", color: "black", maxWidth: "60%", flexWrap: "wrap" }}>  
+              {": " + formatValue(displayValue(data.job_order.preventive_type))}  
+            </Text>  
+          </View>  
+        )}  
+          {data.status?.toLowerCase() === 'cancel' && (  
+          <View style={{ flexDirection: "row", marginBottom: 5 }}>  
+            <Text style={{ fontWeight: "bold", width: "40%" }}>Alasan Cancel</Text>  
+            <Text style={{ width: "60%", color: "black", maxWidth: "60%", flexWrap: "wrap" }}>  
+              {": " + formatValue(displayValue(data.cancel_reason))}  
+            </Text>  
+          </View>  
+        )}  
         </View>  
 
         {/* Data Merchant */}  
@@ -108,12 +124,12 @@ const PMPDF = ({ data }: ReportPDFProps) => {
               Data Merchant  
             </Text>  
             {[  
-              { label: "Nama:", value: ": " + displayValue(data.job_order.merchant_name) },  
-              { label: "Alamat penugasan:", value: ": " + formatValue(displayValue(data.job_order.merchant.address1 + " " + data.job_order.merchant.address2 + " " + data.job_order.merchant.address3 + " " + data.job_order.merchant.address4)) },  
-              { label: "Kota & Kode Pos:", value: ": " + formatValue(displayValue(data.job_order.merchant.city + ", " + data.job_order.merchant.postal_code)) },  
-              { label: "Provinsi:", value: ": " + formatValue(displayValue(data.job_order.merchant.province)) },  
-              { label: "Contact Person:", value: ": " + formatValue(displayValue(data.job_order.merchant.customer_name)) },  
-              { label: "Telepon:", value: ": " + formatValue(displayValue(data.job_order.merchant.phone1)) },  
+              { label: "Nama", value: ": " + displayValue(data.job_order.merchant_name) },  
+              { label: "Alamat penugasan", value: ": " + formatValue(displayValue(data.job_order.merchant.address1 + " " + data.job_order.merchant.address2 + " " + data.job_order.merchant.address3 + " " + data.job_order.merchant.address4)) },  
+              { label: "Kota & Kode Pos", value: ": " + formatValue(displayValue(data.job_order.merchant.city + ", " + data.job_order.merchant.postal_code)) },  
+              { label: "Provinsi", value: ": " + formatValue(displayValue(data.job_order.merchant.province)) },  
+              { label: "Contact Person", value: ": " + formatValue(displayValue(data.job_order.merchant.customer_name)) },  
+              { label: "Telepon", value: ": " + formatValue(displayValue(data.job_order.merchant.phone1)) },  
             ].map((item, index) => (  
               <View key={index} style={{ flexDirection: "row", marginBottom: 5 }}>  
                 <Text style={{ fontWeight: "bold", width: "50%" }}>{item.label}</Text>  
@@ -125,14 +141,14 @@ const PMPDF = ({ data }: ReportPDFProps) => {
       </View>  
 
       {/* Informasi Terminal */}  
-      <View style={{ width: "100%", marginBottom: 20 }}>
+      <View style={{ width: "100%", marginBottom: 5 }}>
         <Text style={{ fontSize: 8, marginBottom: 10, textAlign: "left", fontWeight: "bold", backgroundColor: "#006677", color: "#ffffff", padding: 6 }}>  
           Informasi Terminal  
         </Text>  
         {[  
-          { label: "MID:", value: ": " + displayValue(data.job_order.merchant.mid) },  
-          { label: "TID, TID 2, TID 3:", value: ": " + formatValue(displayValue(data.job_order.tid)) },  
-          { label: "CSI:", value: ": " + displayValue("-") },  
+          { label: "MID", value: ": " + displayValue(data.job_order.merchant.mid) },  
+          { label: "TID, TID 2, TID 3", value: ": " + formatValue(displayValue(data.job_order.tid)) },  
+          { label: "CSI", value: ": " + displayValue("-") },  
         ].map((item, index) => (  
           <View key={index} style={{ flexDirection: "row", marginBottom: 5 }}>  
             <Text style={{ fontWeight: "bold", width: "50%" }}>{item.label}</Text>  
@@ -148,7 +164,7 @@ const PMPDF = ({ data }: ReportPDFProps) => {
         borderWidth: 1,  
         borderColor: "#ccc",  
         overflow: "hidden",  
-        marginBottom: 20,
+        marginBottom: 10,
       }}>  
         <View style={{  
           flexDirection: "row",  
@@ -215,12 +231,12 @@ const PMPDF = ({ data }: ReportPDFProps) => {
             <View style={{ width: "50%" }}>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ width: "50%" }}>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Status Kunjungan:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Status Approval:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Waktu Kedatangan:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Waktu Mulai:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Line Komunikasi:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>No. Direct Line:</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Status Kunjungan</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Status Approval</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Waktu Kedatangan</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Waktu Mulai</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Line Komunikasi</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>No. Direct Line</Text>
                 </View>
                 <View style={{ width: "50%" }}>
                   <Text style={{ marginBottom: 5, color: data.status?.toLowerCase() === "done" ? "green" : "black" }}>{": " + displayValue(data.status)}</Text>
@@ -235,11 +251,11 @@ const PMPDF = ({ data }: ReportPDFProps) => {
             <View style={{ width: "50%" }}>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ width: "50%" }}>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Waktu Selesai:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>PIC Merchant:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Phone:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Supply Kertas:</Text>
-                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Indikasi Gesek Tunai:</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Waktu Selesai</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>PIC Merchant</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Phone</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Supply Kertas</Text>
+                  <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Indikasi Gesek Tunai</Text>
                 </View>
                 <View style={{ width: "50%" }}>
                   <Text style={{ marginBottom: 5 }}>{": " + displayValue(PDFDateIndo(data.end_time))}</Text>
@@ -270,11 +286,20 @@ const PMPDF = ({ data }: ReportPDFProps) => {
           </View>
 
           {/* Keterangan */}
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ fontWeight: "bold" }}>Keterangan </Text>
-            <Text style={{ marginLeft: 80 }}>{": " + formatValue(data.information)}</Text>
+          <View style={{ flexDirection: "row", marginBottom: 5 }}>
+          <Text style={{ fontWeight: "bold", width: "20%" }}>Keterangan</Text>  
+              <Text style={{ width: "20%", color: "black", maxWidth: "20%", flexWrap: "wrap" }}>  
+                {": " + formatValue(displayValue(data.information))}  
+              </Text>
           </View>
-          
+          {data.status?.toLowerCase() === 'cancel' && (  
+          <View style={{ flexDirection: "row", marginBottom: 5 }}>  
+              <Text style={{ fontWeight: "bold", width: "20%" }}>Alasan Cancel</Text>  
+              <Text style={{ width: "20%", color: "black", maxWidth: "20%", flexWrap: "wrap" }}>  
+                {": " + formatValue(displayValue(data.cancel_reason))}  
+              </Text>  
+            </View>  
+          )}  
 
        {/* Bukti Kunjungan */}  
        <Text style={{
@@ -340,7 +365,7 @@ const PMPDF = ({ data }: ReportPDFProps) => {
               color: "#fff",  
               fontWeight: "bold"  
             }}>  
-              {["Account", "No Reference", "Feature", "Mid", "Tid", "Nominal"].map((header, index) => (  
+              {["Product", "Serial Number", "Notes", "Action"].map((header, index) => (  
                 <View key={index} style={{  
                   flex: 1,  
                   padding: 12,  
@@ -401,4 +426,4 @@ const PMPDF = ({ data }: ReportPDFProps) => {
     </Document>
     );
   }
-    export default PMPDF;
+    export default ReportPDF;

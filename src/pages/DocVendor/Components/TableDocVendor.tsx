@@ -1,27 +1,32 @@
-import React, { useMemo, useState, useRef } from "react";  
-import { Button, Typography, Pagination, message, Popconfirm, Tooltip } from "antd";  
-import { DeleteOutlined, DownloadOutlined, UploadOutlined } from "@ant-design/icons";  
-import DataTable from "@smpm/components/DataTable";  
-import { useDebounce } from "@smpm/utils/useDebounce";  
-import useTableHelper from "@smpm/utils/useTableHelper";  
-import { ColumnsType } from "antd/es/table";  
-import { useQuery } from "@tanstack/react-query";  
-import { DocVendorModel } from "@smpm/models/documentModel";  
-import { findAll, update, download, deleteFile } from "@smpm/services/docvendorService";  
-import { formatDateIndo } from "@smpm/utils/dateUtils";  
-import * as dayjs from "dayjs";  
+import { DeleteOutlined, DownloadOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
+import DataTable from "@smpm/components/DataTable";
+import { DocVendorModel } from "@smpm/models/documentModel";
+import { IVendorModel } from "@smpm/models/vendorModel";
+import { deleteFile, download, findAll, remove, update } from "@smpm/services/docvendorService";
+import { getAllVendor } from "@smpm/services/vendorService";
+import useTableHelper from "@smpm/utils/useTableHelper";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Form, message, Modal, Pagination, Popconfirm, Select, Tooltip, Typography } from "antd";
+import { ColumnsType } from "antd/es/table";
+import * as dayjs from "dayjs";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const { Text } = Typography;  
 
 const TableDocVendor: React.FC = () => {  
   const { tableFilter, onChangeTable } = useTableHelper<DocVendorModel>({ pagination: true });  
-  const [search, setSearch] = useState<string>("");  
-  const searchValue = useDebounce(search, 500);  
+  const [_search, setSearch] = useState<string>("");  
   const [fileUploads, setFileUploads] = useState<{ [key: string]: { file: File; name: string } }>({});  
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: { file: string; name: string } }>({});  
   const [currentPage, setCurrentPage] = useState<number>(1);  
   const [pageSize, setPageSize] = useState<number>(10);  
-  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});  
+  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const [isModalVisible, setIsModalVisible] = useState(false);  
+  const [editingVendorName, setEditingVendorName] = useState('');  
+  const [editingRecordId, setEditingRecordId] = useState<number | null>(null);
+  const [vendors, setVendors] = useState<IVendorModel[]>([]);  
+  const [vendorsLoading, setVendorsLoading] = useState(false);      
+  const [editingVendor, setEditingVendor] = useState<IVendorModel | null>(null);
 
   const onSearch = (value: string) => setSearch(value);  
 
@@ -47,17 +52,12 @@ const TableDocVendor: React.FC = () => {
     isLoading,  
     refetch,  
   } = useQuery({  
-    queryKey: ["document-vendor", { ...tableFilter, searchValue, currentPage, pageSize }],  
-    queryFn: () =>  
-      findAll({  
-        order: tableFilter.sort.order,  
-        order_by: tableFilter.sort.order_by,  
-        search: searchValue,  
-        search_by: tableFilter.searchBy,  
-        page: currentPage,  
-        take: pageSize,  
-      }),  
-  });  
+    queryKey: ["document-vendor"],  
+    queryFn: () => findAll(), // Tidak perlu kirim parameter  
+    refetchInterval: 1000, // Auto refetch setiap 1 detik  
+    refetchIntervalInBackground: false, // Hanya refetch saat tab aktif  
+    staleTime: 0, // Data selalu dianggap stale (perlu diperbarui)  
+  }); 
 
   const handleFileUpload = async (id: number, fileKey: 'file1' | 'file2') => {  
     const file = fileUploads[`${id}-${fileKey}`]?.file;  
@@ -94,6 +94,70 @@ const TableDocVendor: React.FC = () => {
     }  
   };  
 
+  const handleEdit = async (id: number, vendorName: string) => {  
+    const vendor = await getVendorById(id);  
+    setEditingRecordId(id);  
+    setEditingVendor(vendor);  
+    setEditingVendorName(vendorName);  
+    setIsModalVisible(true);  
+  };
+  
+  const getVendorById = async (id: number): Promise<IVendorModel | null> => {  
+    try {  
+      const response = await getAllVendor();  
+      return response.result.find((vendor) => vendor.id === id) || null;  
+    } catch (error) {  
+      console.error('Error fetching vendor:', error);  
+      return null;  
+    }  
+  };
+
+  useEffect(() => {  
+    const fetchVendors = async () => {  
+      setVendorsLoading(true);  
+      try {  
+        const response = await getAllVendor();  
+        setVendors(response.result);  
+      } catch (error) {  
+        console.error('Error fetching vendors:', error);  
+      } finally {  
+        setVendorsLoading(false);  
+      }  
+    };  
+  
+    fetchVendors();  
+  }, []);
+
+  const handleModalOk = async () => {  
+    if (editingRecordId !== null) {  
+      try {  
+        const formData = new FormData();  
+        formData.append('vendor_name', editingVendorName);  
+  
+        await update(editingRecordId, formData);  
+        message.success("Vendor data updated successfully.");  
+        await refetch(); // Refresh the data after update  
+        setIsModalVisible(false);  
+      } catch (error) {  
+        message.error("Failed to update vendor data.");  
+      }  
+    }  
+  };
+
+  const handleModalCancel = () => {  
+    setIsModalVisible(false);  
+  }; 
+  
+  const handleDelete = async (id: number) => {  
+    try {  
+      await remove(id);  
+      message.success("Record deleted successfully.");  
+      await refetch(); // Refresh the data after delete  
+    } catch (error) {  
+      message.error("Failed to delete record.");  
+    }  
+  };  
+
   const handleFileChange = (recordId: number, fileKey: 'file1' | 'file2', event: React.ChangeEvent<HTMLInputElement>) => {  
     const file = event.target.files?.[0];  
     if (file) {  
@@ -122,32 +186,10 @@ const TableDocVendor: React.FC = () => {
   const columns: ColumnsType<DocVendorModel> = useMemo(  
     (): ColumnsType<DocVendorModel> => [  
       {  
-        title: "No. JO",  
-        dataIndex: "name",  
-        sorter: true,  
-        sortDirections: ["descend", "ascend"],  
-        width: 250,  
-      },  
-      {  
-        title: "Jenis JO",  
-        dataIndex: "jo_type",  
-        width: 150,  
-      },  
-      {  
         title: "Nama Vendor",  
         dataIndex: "vendor_name",  
         width: 250,  
-      },  
-      {  
-        title: "Merk EDC",  
-        dataIndex: "edc_brand",  
-        width: 150,  
-      },  
-      {  
-        title: "Tipe EDC",  
-        dataIndex: "edc_type",  
-        width: 150,  
-      },  
+      },    
       {  
         title: "Tanggal Perjanjian",  
         dataIndex: "tanggal_perjanjian",  
@@ -155,6 +197,11 @@ const TableDocVendor: React.FC = () => {
         render: (tanggal_perjanjian) => {  
           return dayjs(tanggal_perjanjian).format("DD-MMM-YYYY");  
         },   
+      },  
+      {  
+        title: "No. Perjanjian Kerjasama",  
+        dataIndex: "no_perjanjian_kerjasama",  // Diubah dari no_perjanjian  
+        width: 200,  
       },  
       {  
         title: "File 1",  
@@ -272,6 +319,28 @@ const TableDocVendor: React.FC = () => {
           )  
         ),  
       },  
+      {  
+        title: "Actions",  
+        key: "actions",  
+        width: 200,  
+        render: (_text, record) => (  
+          <div className="flex items-center justify-center gap-2">  
+            <Button  
+              type="default"  
+              icon={<EditOutlined />}  
+              onClick={() => handleEdit(record.id, record.vendor_name)}  
+            />  
+            <Popconfirm  
+              title="Apakah Anda yakin ingin menghapus rekaman ini?"  
+              onConfirm={() => handleDelete(record.id)}  
+              okText="Ya"  
+              cancelText="Tidak"  
+            >  
+              <Button type="default" icon={<DeleteOutlined />} />  
+            </Popconfirm>  
+          </div>  
+        ),  
+      },
     ],  
     [fileUploads, uploadedFiles]  
   );  
@@ -284,21 +353,16 @@ const TableDocVendor: React.FC = () => {
 
   const dataSource = useMemo(() => {  
     const activityData = activityJobOrder?.result.data || [];  
-    return [  
-      ...activityData.map((item: any) => ({  
+    return activityData.map((item: any) => ({  
         id: item.id,  
-        name: item.job_order_no,  
-        no_jo: item.job_order_no,  
-        jo_type: item.jo_type,  
+        name: item.name,  // Disesuaikan  
         vendor_name: item.vendor_name,  
-        edc_brand: item.edc_brand,  
-        edc_type: item.edc_type,  
-        tanggal_masuk: formatDateIndo(item.tanggal_perjanjian),  
+        tanggal_perjanjian: item.tanggal_perjanjian,  // Diubah dari tanggal_masuk  
+        no_perjanjian_kerjasama: item.no_perjanjian_kerjasama,  // Diubah dari no_perjanjian  
         file1: item.file1,  
-        file2: item.file2, 
-      })),  
-    ];  
-  }, [currentPage, pageSize, activityJobOrder]);  
+        file2: item.file2,  
+    }));  
+}, [currentPage, pageSize, activityJobOrder]);  
 
   return (  
     <div>  
@@ -315,6 +379,39 @@ const TableDocVendor: React.FC = () => {
           scroll={{ x: 'max-content' }}  
           pagination={false}  
         />  
+        <Modal  
+                title="Edit Vendor Name"  
+                visible={isModalVisible}  
+                onOk={handleModalOk}  
+                onCancel={handleModalCancel}  
+            >  
+               <Form.Item  
+                name="vendor_name"  
+                label="Nama Vendor"  
+                rules={[{ required: true, message: 'Please select a vendor' }]}  
+              >  
+                  <Select  
+                      loading={vendorsLoading}  
+                      placeholder="Pilih Vendor"  
+                      optionFilterProp="children"  
+                      showSearch  
+                      filterOption={(input: any, option: any) =>  
+                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())  
+                      }  
+                      options={vendors.map((vendor) => ({  
+                        value: vendor.id,  
+                        label: vendor.name,  
+                      }))}  
+                      value={editingVendor?.id}  
+                      onChange={(value: any) => {  
+                        const selectedVendor = vendors.find((v) => v.id === value);  
+                        if (selectedVendor) {  
+                          setEditingVendorName(selectedVendor.name);  
+                        }  
+                      }}  
+                    />
+              </Form.Item>
+          </Modal>
       </div>  
       <div className="flex flex-col gap-4 mt-4">  
         <Pagination  

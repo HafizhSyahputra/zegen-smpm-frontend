@@ -90,6 +90,12 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ data, isLast }) => {
             </p>  
           )}  
 
+          {data.cancel_type && (  
+            <p className="mb-2 text-black">  
+              Cancel Type: {data.cancel_type}  
+            </p>  
+          )}  
+
           {data.petugas && (  
             <p className="mb-2 text-black">  
               Petugas: {data.petugas}  

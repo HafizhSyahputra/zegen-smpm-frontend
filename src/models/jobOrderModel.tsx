@@ -146,6 +146,7 @@ export interface ReportPDFProps {
   data: {
     job_order_no: string;
     job_order: {
+      preventive_type: string;
       merchant_name: string;
       vendor: {
         name: string;
@@ -190,6 +191,7 @@ export interface ReportPDFProps {
     merchant_pic_phone: string;
     swipe_cash_indication: string;
     information: string;
+    cancel_reason?: string;
     reason: string;
     info_remark: string;
     dongle: {

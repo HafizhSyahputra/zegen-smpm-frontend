@@ -1,22 +1,32 @@
 import PageContent from "@smpm/components/PageContent";  
 import PageLabel from "@smpm/components/pageLabel";  
 import Page from "@smpm/components/pageTitle";  
-// import { IconBuildingStore } from "@tabler/icons-react";  
 import { Breadcrumb, Button, Card, Divider, Flex, Typography } from "antd";  
- import {  
+import {  
   HomeOutlined,  
 } from "@ant-design/icons";  
-import TableVendor from "./Components/TableDocVendor";
-import { IconPlus } from "@tabler/icons-react";
+import TableVendor from "./Components/TableDocVendor";  
+import { IconPlus } from "@tabler/icons-react";  
 import { useNavigate } from 'react-router-dom';  
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';  
 
 const { Title } = Typography;  
+
+const queryClient = new QueryClient({  
+  defaultOptions: {  
+    queries: {  
+      refetchOnWindowFocus: false,  
+      retry: 1,  
+      staleTime: 5 * 60 * 1000,  
+    },  
+  },  
+});  
 
 const FileIcon = () => (  
   <svg  
     xmlns="http://www.w3.org/2000/svg"  
     width="17"  
-    height="17"  
+    height="17"   
     viewBox="0 0 24 24"  
     fill="none"  
     stroke="currentColor"  
@@ -31,13 +41,13 @@ const FileIcon = () => (
   </svg>  
 );  
 
-const Vendor = () => {  
+const VendorContent = () => {  
   const navigate = useNavigate();  
 
   const handleAddData = () => {  
     navigate('/add-doc-vendor');  
   };  
-  
+
   return (  
     <Page title={"Document Vendor"}>  
       <PageLabel  
@@ -64,7 +74,7 @@ const Vendor = () => {
                 ),  
               },  
               {  
-                 title: "Document Vendor",  
+                title: "Document Vendor",  
               },  
             ]}  
           />  
@@ -75,22 +85,30 @@ const Vendor = () => {
           <Flex justify="space-between" align="flex-end">  
             <Title level={3}>Document Vendor</Title>  
             <Button  
-                type="primary"  
-                style={{  
-                  display: "flex",  
-                  alignItems: "center",  
-                }}  
-                onClick={handleAddData}  
-              >  
-                <IconPlus style={{ marginRight: "8px" }} />  
-                Add Data  
-              </Button>  
+              type="primary"  
+              style={{  
+                display: "flex",  
+                alignItems: "center",  
+              }}  
+              onClick={handleAddData}  
+            >  
+              <IconPlus style={{ marginRight: "8px" }} />  
+              Add Data  
+            </Button>  
           </Flex>  
           <Divider />  
           <TableVendor />  
         </Card>  
       </PageContent>  
     </Page>  
+  );  
+};  
+
+const Vendor = () => {  
+  return (  
+    <QueryClientProvider client={queryClient}>  
+      <VendorContent />  
+    </QueryClientProvider>  
   );  
 };  
 
