@@ -14,8 +14,8 @@ const normFile = (e: any) => {
 };  
 
 export type FormFieldCancelDescriptionAndEvidenceProps = {  
-  description: string; 
-  reasonCancel: string | undefined; 
+  description: string;   
+  reasonCancel: string | undefined;   
   proofOfVisitImages: { media_id: string; media: { path: string } }[];  
   optionalImages: { media_id: string; media: { path: string } }[];  
   isDone: boolean;  
@@ -27,13 +27,13 @@ const FormFieldCancelDescriptionAndEvidence: React.FC<FormFieldCancelDescription
   proofOfVisitImages,  
   optionalImages,  
   description,  
-  reasonCancel,
+  reasonCancel,  
 }) => {  
   const isImage = (filePath: string) => {  
     return /\.(jpg|jpeg|png|gif|bmp|svg)$/i.test(filePath);  
   };  
 
-  const [cancelReason, setCancelReason] = useState<string | undefined>(undefined);  
+  const [cancelReason, setCancelReason] = useState<string | undefined>(reasonCancel);  
   const [cancelReasonOther, setCancelReasonOther] = useState<string>("");  
 
   const handleCancelReasonChange = (value: string) => {  
@@ -62,48 +62,48 @@ const FormFieldCancelDescriptionAndEvidence: React.FC<FormFieldCancelDescription
       >  
         <TextArea rows={4} readOnly={isDone} />  
       </Form.Item>   
-        <Form.Item label="Alasan Pembatalan">  
+      <Form.Item label="Alasan Pembatalan">  
+        <Form.Item  
+          name="cancel_reason"  
+          initialValue={reasonCancel}  
+          rules={[  
+            {  
+              required: true,  
+              message: "Alasan pembatalan harus dipilih",  
+            },  
+          ]}  
+        >  
+          <Select  
+            value={cancelReason}  
+            onChange={handleCancelReasonChange}  
+            placeholder="Pilih alasan pembatalan"  
+          >  
+            <Option value="EDC Hilang">EDC Hilang</Option>  
+            <Option value="Merchant Tutup">Merchant Tutup</Option>  
+            <Option value="Ganti Job Order">Ganti Job Order</Option>  
+            <Option value="Lainnya">Lainnya</Option>  
+          </Select>  
+        </Form.Item>  
+
+        {cancelReason === "Lainnya" && (  
           <Form.Item  
             name="cancel_reason"  
-            initialValue={reasonCancel}  
             rules={[  
               {  
                 required: true,  
-                message: "Alasan pembatalan harus dipilih",  
+                message: "Silakan isi alasan pembatalan lainnya",  
               },  
             ]}  
           >  
-            <Select  
-              value={cancelReason}  
-              onChange={handleCancelReasonChange}  
-              placeholder="Pilih alasan pembatalan"  
-            >  
-              <Option value="EDC Hilang">EDC Hilang</Option>  
-              <Option value="Merchant Tutup">Merchant Tutup</Option>  
-              <Option value="Ganti Job Order">Ganti Job Order</Option>  
-              <Option value="Ganti Job Order">Lainnya</Option>  
-            </Select>  
+            <TextArea  
+              rows={2}  
+              placeholder="Isi alasan pembatalan lainnya"  
+              value={cancelReasonOther}  
+              onChange={handleCancelReasonOtherChange}  
+            />  
           </Form.Item>  
-
-          {cancelReason === "Lainnya" && (  
-            <Form.Item  
-              name="cancel_reason"  
-              rules={[  
-                {  
-                  required: true,  
-                  message: "Silakan isi alasan pembatalan lainnya",  
-                },  
-              ]}  
-            >  
-              <TextArea  
-                rows={2}  
-                placeholder="Isi alasan pembatalan lainnya"  
-                value={cancelReasonOther}  
-                onChange={handleCancelReasonOtherChange}  
-              />  
-            </Form.Item>  
-          )}  
-        </Form.Item>  
+        )}  
+      </Form.Item>  
 
       {isDone ? (  
         <Form.Item label="Bukti Kunjungan">  

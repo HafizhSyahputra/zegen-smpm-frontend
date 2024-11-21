@@ -13,3 +13,16 @@ export interface ISignInModel {
 	access_token: string
 	refresh_token: string
 }
+
+export interface IUserProfile {  
+	result: {
+		id: string;  
+		name: string;  
+		email: string;  
+		status: string;  
+		lastLogin: Date;  
+		role:{
+			name: string;
+		}
+	};
+  }  

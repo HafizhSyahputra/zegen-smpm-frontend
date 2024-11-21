@@ -7,7 +7,7 @@ const SubmitPaymentModal: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Media queries for responsiveness
-  const isMediumScreen = useMediaQuery({ query: '(max-width: 1024px)' });
+  const _isMediumScreen = useMediaQuery({ query: '(max-width: 1024px)' });
   const isMobileScreen = useMediaQuery({ query: '(max-width: 768px)' });
 
   // Fungsi untuk menampilkan modal
@@ -123,7 +123,7 @@ const SubmitPaymentModal: React.FC = () => {
           </Col>
         </Row>
 
-        <style jsx>{`
+        <style>{`
           @keyframes pop-up {
             from {
               transform: scale(0.9);

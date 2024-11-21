@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import  { useState } from 'react';
 import PageContent from "@smpm/components/PageContent";  
 import PageLabel from "@smpm/components/pageLabel";  
 import Page from "@smpm/components/pageTitle";  
-import { Breadcrumb, Card, Divider, Typography, Button, Upload, message } from "antd";   
-import { HomeOutlined, UploadOutlined } from "@ant-design/icons";  
+import { Breadcrumb, Card, Divider, Typography, message } from "antd";   
+import { HomeOutlined } from "@ant-design/icons";  
 import { IconFile } from "@tabler/icons-react";
-import BeritaTable from './components/BeritaDanAcara';
+import BeritaTable from './components/BeritaTable';
 
 const { Title } = Typography;  
 
@@ -61,15 +61,6 @@ const BeritaDanAcaraPage = () => {
         <Card>  
           <div className="flex justify-between items-end mb-4">  
             <Title level={3} style={{ margin: 0 }}>Berita dan Acara</Title>  
-            <Upload
-              multiple
-              showUploadList={false} // Nonaktifkan tampilan default file list
-              customRequest={({ onSuccess }) => onSuccess && onSuccess("ok")} // Simulasikan unggahan sukses
-              onChange={handleUpload}
-              beforeUpload={() => false} // Mencegah pengunggahan otomatis untuk kontrol manual
-            >
-              <Button type="primary" icon={<UploadOutlined />}>Unggah File</Button>
-            </Upload>
           </div>  
           <Divider />  
           <BeritaTable fileList={fileList} /> {/* Mengoper fileList sebagai prop */}

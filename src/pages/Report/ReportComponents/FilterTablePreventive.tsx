@@ -9,8 +9,8 @@ import {
   message,  
 } from "antd";  
 import { Option } from "antd/es/mentions";  
-import React from "react";  
-import { downloadPreventiveSLA } from "@smpm/services/pmReportService";
+import React, { useState } from "react";    
+import { downloadPreventiveSLA } from "@smpm/services/pmReportService";  
 
 export type TOptions = {  
   label: string;  
@@ -53,14 +53,21 @@ const FilterTable: React.FC<IFilterTable> = ({
   isInventoryReport = false,  
 }) => {  
   const { Title } = Typography;  
+  
+  const [isDownloadingPreventiveSLA, setIsDownloadingPreventiveSLA] = useState(false);  
 
   const handleDownloadPreventiveSLA = async () => {  
     try {  
+      setIsDownloadingPreventiveSLA(true);  
+      
       await downloadPreventiveSLA();  
+      
       message.success('Preventive Maintenance SLA data downloaded successfully');  
     } catch (error) {  
       console.error('Error downloading Preventive Maintenance SLA:', error);  
       message.error('Failed to download Preventive Maintenance SLA data');  
+    } finally {  
+      setIsDownloadingPreventiveSLA(false);  
     }  
   };  
 
@@ -76,6 +83,7 @@ const FilterTable: React.FC<IFilterTable> = ({
                 onChange={handleChangeFilterStatus}  
                 value={valueStatus}  
                 className="w-full mb-5"  
+                placeholder="Status"  
               >  
                 {optionStatus.map((val) => (  
                   <Option key={val.value} value={val.value}>{val.label}</Option>  
@@ -87,6 +95,7 @@ const FilterTable: React.FC<IFilterTable> = ({
                 onChange={handleChangeFilterWilayah}  
                 value={valueWilayah}  
                 className="w-full mb-5"  
+                placeholder="Wilayah"  
               >  
                 {optionWilayah.map((val) => (  
                   <Option key={val.value} value={val.value}>{val.label}</Option>  
@@ -98,6 +107,7 @@ const FilterTable: React.FC<IFilterTable> = ({
                 onChange={handleChangeFilterVendor}  
                 value={valueVendor}  
                 className="w-full mb-5"  
+                placeholder="Vendor"  
               >  
                 {optionVendor.map((val) => (  
                   <Option key={val.value} value={val.value}>{val.label}</Option>  
@@ -109,6 +119,7 @@ const FilterTable: React.FC<IFilterTable> = ({
                 onChange={handleChangeFilterMerchant}  
                 value={valueMerchant}  
                 className="w-full mb-5"  
+                placeholder="Merchant"  
               >  
                 {optionMerchant.map((val) => (  
                   <Option key={val.value} value={val.value}>{val.label}</Option>  
@@ -137,6 +148,7 @@ const FilterTable: React.FC<IFilterTable> = ({
                   <Button   
                     type="primary"   
                     onClick={handleDownloadPreventiveSLA}  
+                    loading={isDownloadingPreventiveSLA} 
                   >  
                     SLA  
                   </Button>   
@@ -155,4 +167,4 @@ const FilterTable: React.FC<IFilterTable> = ({
   );  
 };  
 
-export default FilterTable;  
+export default FilterTable;

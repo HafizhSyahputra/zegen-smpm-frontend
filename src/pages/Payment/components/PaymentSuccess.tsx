@@ -1,7 +1,7 @@
-import React, { useState } from 'react';  
-import { Modal, Typography, Button, Space, message } from 'antd';  
-import { CheckCircleFilled } from '@ant-design/icons';  
-import { Link } from 'react-router-dom';  
+import { CheckCircleFilled } from '@ant-design/icons';
+import { Button, Modal, Space, Typography, message } from 'antd';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const { Title, Text } = Typography;  
 
@@ -11,7 +11,7 @@ interface SuccessModalProps {
 }  
 
 const SuccessModal: React.FC<SuccessModalProps> = ({ visible, onClose }) => {  
-  const [previewLink, setPreviewLink] = useState('http://localhost:5173/payment/:id');  
+  const [previewLink, _setPreviewLink] = useState('http://localhost:5173/payment/:id');  
 
   const copyToClipboard = () => {  
     navigator.clipboard.writeText(previewLink);  
